@@ -60,7 +60,7 @@ public class ServletAdd extends HttpServlet {
 
         String name = jobj.get("name").getAsString();
         String surname = jobj.get("surname").getAsString();
-        String salary = jobj.get("salary").getAsString();
+        double salary = jobj.get("salary").getAsString();
 
         User user = new User(name, surname, salary);
         model.add(user, counter.getAndIncrement());

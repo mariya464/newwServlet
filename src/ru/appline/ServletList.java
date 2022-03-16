@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @WebServlet(urlPatterns = "/get")
 public class ServletList extends HttpServlet {
 
-    private AtomicInteger counter = new AtomicInteger(5);
+
     Model model = Model.getInstance();
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -67,70 +67,21 @@ public class ServletList extends HttpServlet {
 //                    "</html>");
 //        }
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
-        StringBuffer jb = new StringBuffer();
-        String line;
-
-        try{
-            ButteredReader reader = request.getReader();
-            while ((line = reader.readLine()) !null){
-                jb.append(line);
-            }
-        }catch (ExportException e){
-            System.out.println("Error");
-        }
-
-        JSObject jobj = gson.fromJson(String.vslueof(jb),jsonObject.class);
-        JSObject jobj = gson.fromJson(Integer.vslueof(jb),jsonObject.class);
-
-
-        response.setContentType("texr/html;charset=utf-8");
+        response.setContentType("application/json;charset=utf-8");
         PrintWriter pw = response.getWriter();
 
-        int id = jobj.get("id").getAsInteger();
-        String name = jobj.get("name").getAsString();
-        String surname = jobj.get("surname").getAsString();
-        String salary = jobj.get("salary").getAsString();
+        int id = Integer.parseInt(request.getParameter("id"));
 
-        if (id==0){
-            pw.print("<html>" +
-                    "<h3>Доступные пользователи:</h3><br/>" +
-                    "ID пользователя: " +
-                    "<ul>");
-            for(Map.Entry<Integer, User> entry : model.getFromList().entrySet()){
-                pw.print("<li>" + entry.getKey() + "</li>" +
-                        "<ul>" +
-                        "<li>Имя: " + entry.getValue().getName() + "</li>" +
-                        "<li>Фамилия: " + entry.getValue().getSurname() + "</li>" +
-                        "<li>Зарплата: " + entry.getValue().getSalary() + "</li>" +
-                        "</ul>");
-            }
-
-            pw.print("<ul>" +
-                    "<a href=\"index.jsp\">Домой</a>" +
-                    "</html>");
+        if (id == 0) {
+            pw.print(gson.toJson(model.getFromList()));
         } else if (id > 0) {
-            if(id > model.getFromList().size()){
-                pw.print("<html>" +
-                        "<h3>Такого пользователя нет :(</h3>" +
-                        "<a href =\"index.jsp\">Домой</a>" +
-                        "</html>");
-            }else{
-                pw.print("<html>" +
-                        "<h3>Запрошенный пользователь:</h3>" +
-                        "<br/>" +
-                        "Имя: " + model.getFromList().get(id).getName() + "<br/>" +
-                        "Фамилия: " + model.getFromList().get(id).getSurname() + "<br/>" +
-                        "Зарплата: " + model.getFromList().get(id).getSalary() + "<br/>" +
-                        "<a href =\"index.jsp\">Домой</a>" +
-                        "</html>");
+            if (id > model.getFromList().size()) {
+                pw.print("Такого пользователя нет");
+        }else {
+                pw.println(gson.toJson(model.getFromList().get(id).getName()));
+                pw.println(gson.toJson(model.getFromList().get(id).getSurname()));
+                pw.println(gson.toJson(model.getFromList().get(id).getSalary()));
+            }else {
+                pw.print("ID должен быть больше 0");
             }
-        }else{
-            pw.print("<html>" +
-                    "<h3>ID должен быть больше 0</h3>" +
-                    "<a href =\"index.jsp\">Домой</a>" +
-                    "</html>");
-
-        pw.print(gson.toJson(model.getFromList()));
-
-    }
 }
